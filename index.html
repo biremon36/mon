@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Menu Ga</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <section id="tableScreen" class="table-screen">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 96 96" role="img">
+            <path d="M18 55c4 18 20 29 38 25 14-3 24-14 25-27H18Z" />
+            <path d="M24 55c3 10 14 16 27 14 10-2 18-8 21-16" />
+            <path d="M25 38c4-9 15-18 30-18 11 0 20 5 25 13" />
+            <path d="M52 19c-1 9 3 14 11 17" />
+          </svg>
+        </div>
+        <div class="table-copy">
+          <p class="eyebrow">No-typing order</p>
+          <h1>Nhập bàn rồi gọi món</h1>
+          <p>Ban đầu không chọn sẵn bàn. Nhập số bàn hoặc tên khách, thêm mô tả nếu cần, app sẽ tự lưu lần dùng gần nhất.</p>
+        </div>
+
+        <div class="start-card">
+          <label class="field">
+            <span>Số bàn / tên khách</span>
+            <input id="tableInput" data-testid="table-input" type="text" inputmode="text" autocomplete="off" placeholder="Ví dụ: 7, A3, anh Nam" />
+          </label>
+          <div class="quick-table-row">
+            <span>Bàn nhanh</span>
+            <div id="quickTableChips" class="chip-group wrap" style="margin-bottom: 8px;"></div>
+            <div class="inline-add" style="margin-top: 4px;">
+              <input id="quickTableAddInput" type="text" placeholder="Thêm bàn nhanh..." style="padding: 8px 12px; font-size: 0.9rem;" />
+              <button id="quickTableAddBtn" class="ghost-button compact" type="button" style="padding: 6px 12px;">+ Thêm</button>
+            </div>
+          </div>
+          <label class="field">
+            <span>Mô tả khách / vị trí</span>
+            <textarea id="customerDescInput" data-testid="customer-desc" rows="3" placeholder="Ví dụ: khách ngồi ngoài cửa, áo xanh, mang về..."></textarea>
+          </label>
+          <div class="table-tools">
+            <div class="chip-group" id="zoneChips" aria-label="Chọn khu vực"></div>
+            <div class="chip-group" id="serviceChips" aria-label="Chọn kiểu phục vụ"></div>
+          </div>
+          <button id="startOrderBtn" class="primary-button full" data-testid="start-order" type="button">Bắt đầu gọi món</button>
+        </div>
+
+        <section class="history-panel start-history">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Đã gửi</p>
+              <h2>Đơn gần đây</h2>
+            </div>
+            <button id="clearHistoryBtn" class="ghost-button compact" type="button">Xóa lịch sử</button>
+          </div>
+          <div id="ordersHistoryStart" class="orders-history"></div>
+        </section>
+      </section>
+
+      <main id="orderScreen" class="order-screen hidden">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Đang gọi món</p>
+            <h1 id="currentTableLabel">Bàn 1</h1>
+          </div>
+          <div class="topbar-actions">
+            <button id="changeTableBtn" class="icon-button" type="button" title="Đổi bàn" aria-label="Đổi bàn">
+              <span aria-hidden="true">#</span>
+            </button>
+            <button id="customizeBtn" class="text-button" type="button">Tùy biến</button>
+            <button id="cartToggleBtn" class="cart-pill" type="button">
+              Giỏ <span id="cartCount">0</span>
+            </button>
+          </div>
+        </header>
+
+        <nav id="categoryTabs" class="category-tabs" aria-label="Danh mục món"></nav>
+
+        <div class="content-grid">
+          <section class="menu-column">
+            <section class="custom-order-panel">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">Tự nhập</p>
+                  <h2>Món khác / yêu cầu khác</h2>
+                </div>
+              </div>
+              <div class="custom-grid">
+                <label class="field">
+                  <span>Tên món khác</span>
+                  <input id="customItemName" data-testid="custom-item-name" type="text" autocomplete="off" placeholder="Ví dụ: thêm thịt, gửi xe, món ngoài menu..." />
+                </label>
+                <label class="field small-field">
+                  <span>Giá k</span>
+                  <input id="customItemPrice" data-testid="custom-item-price" type="number" min="0" step="5" placeholder="0" />
+                </label>
+                <label class="field">
+                  <span>Ghi chú riêng món</span>
+                  <input id="customItemNote" data-testid="custom-item-note" type="text" autocomplete="off" placeholder="Có thể để trống" />
+                </label>
+                <button id="addCustomItemBtn" class="primary-button full" data-testid="add-custom-item" type="button">Thêm món tự nhập</button>
+              </div>
+            </section>
+
+            <section id="menuList" class="menu-list" aria-label="Danh sách món"></section>
+
+            <section class="history-panel">
+              <div class="section-title">
+                <div>
+                  <p class="eyebrow">Phía dưới</p>
+                  <h2>Đơn vừa gửi</h2>
+                </div>
+              </div>
+              <div id="ordersHistoryMain" class="orders-history"></div>
+            </section>
+          </section>
+
+          <aside id="cartPanel" class="cart-panel">
+            <div class="cart-header">
+              <div>
+                <p class="eyebrow">Giỏ hàng</p>
+                <h2 id="cartTableTitle">Bàn 1</h2>
+              </div>
+              <button id="closeCartBtn" class="icon-button hide-desktop" type="button" title="Đóng giỏ" aria-label="Đóng giỏ">x</button>
+            </div>
+
+            <div class="order-meta">
+              <span id="serviceLabel">Tại bàn</span>
+              <span id="zoneLabel">Khu A</span>
+              <span id="priorityLabel">Bình thường</span>
+            </div>
+
+            <div id="cartItems" class="cart-items"></div>
+
+            <label class="field">
+              <span>Yêu cầu khác của khách</span>
+              <textarea id="orderRequestInput" data-testid="order-request" rows="3" placeholder="Nhập gì cũng được, tự lưu theo đơn hiện tại"></textarea>
+            </label>
+
+            <div class="cart-total">
+              <span>Tổng tiền</span>
+              <strong id="cartTotal">0k</strong>
+            </div>
+
+            <div class="cart-actions">
+              <button id="clearCartBtn" class="ghost-button" type="button">Xóa giỏ</button>
+              <button id="sendOrderBtn" class="primary-button" type="button">Gửi đơn hàng</button>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <dialog id="itemDialog" class="modal">
+      <form method="dialog" class="modal-card">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">Tùy chọn món</p>
+            <h2 id="modalItemName">Tên món</h2>
+            <p id="modalItemPrice" class="muted">0k</p>
+          </div>
+          <button class="icon-button" value="cancel" type="submit" title="Đóng" aria-label="Đóng">x</button>
+        </div>
+
+        <div class="modal-body">
+          <div id="baseTypeBlock" class="option-block">
+            <p>Loại món</p>
+            <div class="segmented" id="baseTypeOptions"></div>
+          </div>
+
+          <div class="option-block">
+            <p>Tùy chọn hành</p>
+            <div class="segmented" id="onionOptions"></div>
+          </div>
+
+          <div class="option-block">
+            <p>Yêu cầu phổ biến</p>
+            <div class="chip-group wrap" id="popularOptions"></div>
+            <div class="inline-add">
+              <input id="popularCustomInput" data-testid="popular-custom-input" type="text" autocomplete="off" placeholder="Nhập yêu cầu khác rồi lưu thành nút" />
+              <button id="addPopularOptionBtn" class="ghost-button" data-testid="add-popular-option" type="button">Lưu nút</button>
+            </div>
+          </div>
+
+          <div class="option-block">
+            <p>Mức ưu tiên</p>
+            <div class="segmented" id="itemPriorityOptions"></div>
+          </div>
+        </div>
+
+        <button id="confirmAddBtn" class="primary-button full" value="default" type="button" data-testid="confirm-add">Xác nhận thêm</button>
+      </form>
+    </dialog>
+
+    <dialog id="settingsDialog" class="modal">
+      <form method="dialog" class="modal-card wide">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">Tùy biến đơn</p>
+            <h2>Chỉnh nhanh không cần nhập</h2>
+          </div>
+          <button class="icon-button" value="cancel" type="submit" title="Đóng" aria-label="Đóng">x</button>
+        </div>
+
+        <div class="settings-grid">
+          <div class="option-block">
+            <p>Thông tin bàn / khách</p>
+            <label class="field">
+              <span>Số bàn / tên khách</span>
+              <input id="settingsTableInput" data-testid="settings-table-input" type="text" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>Mô tả khách / vị trí</span>
+              <textarea id="settingsCustomerDescInput" data-testid="settings-customer-desc" rows="4"></textarea>
+            </label>
+            <div class="option-block">
+              <p>Bàn nhanh</p>
+              <div id="quickTableEditor" class="editable-options"></div>
+            </div>
+          </div>
+
+          <div class="option-stack">
+            <div class="option-block">
+              <p>Khu vực</p>
+              <div id="zoneEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Kiểu phục vụ</p>
+              <div id="settingsServiceChips" class="chip-group wrap"></div>
+              <div id="serviceEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Hành</p>
+              <div id="onionEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Yêu cầu phổ biến cho phở/miến</p>
+              <div id="popularEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Yêu cầu phổ biến cho xôi</p>
+              <div id="ricePopularEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Thanh toán dự kiến</p>
+              <div id="paymentChips" class="chip-group wrap"></div>
+              <div id="paymentEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Ghi chú nhanh cho bếp</p>
+              <div id="kitchenNoteChips" class="chip-group wrap"></div>
+              <div id="kitchenNoteEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Ưu tiên đơn</p>
+              <div id="priorityChips" class="chip-group wrap"></div>
+              <div id="orderPriorityEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Ưu tiên trong popup món</p>
+              <div id="itemPriorityEditor" class="editable-options"></div>
+            </div>
+            <div class="option-block">
+              <p>Thêm món vào menu để lần sau bấm nhanh</p>
+              <div class="custom-grid settings-custom-grid">
+                <select id="newMenuCategory" class="select-input" data-testid="new-menu-category"></select>
+                <input id="newMenuName" data-testid="new-menu-name" type="text" placeholder="Tên món mới" />
+                <input id="newMenuPrice" data-testid="new-menu-price" type="number" min="0" step="5" placeholder="Giá k" />
+                <input id="newMenuLargePrice" data-testid="new-menu-large-price" type="number" min="0" step="5" placeholder="Giá lớn k nếu là phở" />
+                <button id="addMenuItemBtn" class="ghost-button full" data-testid="add-menu-item" type="button">Lưu món vào menu</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button id="saveSettingsBtn" class="primary-button full" value="default" type="button" data-testid="save-settings">Lưu tùy biến</button>
+      </form>
+    </dialog>
+
+    <dialog id="successDialog" class="modal">
+      <form method="dialog" class="modal-card success">
+        <div class="success-icon" aria-hidden="true">OK</div>
+        <h2>Đã gửi đơn hàng</h2>
+        <p id="successSummary" class="muted"></p>
+        <button id="newOrderBtn" class="primary-button full" value="default" type="button" data-testid="new-order">Tạo đơn mới</button>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
